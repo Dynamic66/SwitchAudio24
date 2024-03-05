@@ -2,7 +2,7 @@ How to Use:
 
 1. Download the zip file and extract the folder to the desired location.
 
-2. Press Windows + "R" and type 'shell:startup'. Place a shortcut for Switchaudio24.exe in the folder that was opened.
+2. Press Windows + "R" and type 'shell:startup'. Place a shortcut for Switchaudio24.exe in the folder that was opened. This will automatically open SwitchAudio24 when starting your PC.
 
    ![image](https://github.com/Dynamic66/SwitchAudio24/assets/160179474/d660aa20-293f-4955-ac19-de2e156edbb9)
 
