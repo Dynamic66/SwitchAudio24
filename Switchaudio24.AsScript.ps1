@@ -239,7 +239,7 @@ function Show-Settings_psf
 	}
 	
 	$formsettings_FormClosing = [System.Windows.Forms.FormClosingEventHandler]{
-		if ($checkedlistbox1.SelectedIndices.Count -eq 0)
+		if ($checkedlistbox1.CheckedItems.Count -ne 0)
 		{
 			Set-Content -path $configpath -Value $null -Encoding UTF8 -Force
 			$script:audiolist = $checkedlistbox1.CheckedItems | ForEach-Object {
@@ -2304,6 +2304,7 @@ function Show-SwitchAudio2_psf
 	}
 	
 	$bExit_Click = {
+		$ErrorActionPreference = 'SilentlyContinue'
 		$formSwitchaudio24.Close()
 		$formsettings.close()
 	}
