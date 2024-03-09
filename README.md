@@ -4,7 +4,8 @@ How to Use:
 
 2. Start Switchaudio24.exe as an admin. 
 
-Outputs can be switched by double-clicking the tray icon or pressing < + alt.
+Outputs can be switched by double-clicking the tray icon ![image](https://github.com/Dynamic66/SwitchAudio24/assets/160179474/0b2f9ab0-8586-42e6-b999-1aba361318a7)
+or pressing < + alt.
 
 ----------------------------------------------------
 Recomanded settings:
