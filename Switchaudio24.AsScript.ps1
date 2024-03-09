@@ -58,7 +58,7 @@ function MoveItemsUp
 		
 		#switches checkmarks around
 		$thischeck = $checkedListBox1.GetItemChecked($index)
-		$movecheck = $checkedListBox1.GetItemChecked($index -1)
+		$movecheck = $checkedListBox1.GetItemChecked($index - 1)
 		$checkedListBox1.SetItemChecked($index - 1, $thischeck)
 		$checkedListBox1.SetItemChecked($index, $movecheck)
 	}
@@ -207,7 +207,7 @@ function Show-Settings_psf
 	#----------------------------------------------
 	# User Generated Script
 	#----------------------------------------------
-	$formsettings_Load = {	
+	$formsettings_Load = {
 		if (Test-Path $configpath)
 		{
 			$conf = (Get-Content $configpath | Select-String -pattern "Device=") -replace "Device="
@@ -269,8 +269,11 @@ function Show-Settings_psf
 					
 					$shortcutPath = Join-Path -Path $startupFolder -ChildPath $shortcutName
 					
+					$scriptPath = $HostInvocation.MyCommand.ToString()
+					
 					$shortcut = $shell.CreateShortcut($shortcutPath)
-					$shortcut.TargetPath = $HostInvocation.MyCommand.ToString()
+					$shortcut.TargetPath = $scriptPath
+					$shortcut.WorkingDirectory = [System.IO.Path]::GetDirectoryName($scriptPath)
 					$shortcut.Save()
 					"Startup=true" | Out-File -Append -FilePath $configpath -Encoding UTF8 -Force
 				}
@@ -2208,7 +2211,7 @@ AAAAB///////4AAAAAAAAAAAA////////+AAAAAAAAAAAAf////////gAAAAAAAAAAAH////////
 	$textbox1.Size = New-Object System.Drawing.Size(773, 28)
 	$textbox1.TabIndex = 1
 	$textbox1.add_KeyDown($textbox1_KeyDown)
-
+	
 	
 	
 	#groupbox3
@@ -2232,7 +2235,7 @@ AAAAB///////4AAAAAAAAAAAA////////+AAAAAAAAAAAAf////////gAAAAAAAAAAAH////////
 	$checkbox1.Text = "Open Switchaudio24 at Startup"
 	$checkbox1.Checked = $true
 	$checkbox1.Dock = 'Fill'
-
+	
 	
 	
 	$groupbox2.ResumeLayout()
