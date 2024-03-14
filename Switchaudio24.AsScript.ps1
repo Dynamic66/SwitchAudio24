@@ -100,10 +100,10 @@ function Load-Audiolist
 	}
 	
 	$audiolist | ForEach-Object {
-		$combobox1.Items.AddRange($_.name -replace '\(((\w)*(\s)?)*\)')
+		$combobox1.Items.AddRange($_.name)
 	}
 	
-	$combobox1.Text = ([string](Get-audiodevice -Playback).name -replace '\(((\w)*(\s)?)*\)')
+	$combobox1.Text = [string](Get-audiodevice -Playback).name
 }
 
 function Invoke-FormFade
@@ -167,13 +167,34 @@ Function Invoke-Switch
 		[string]$name
 	)
 	$soundPlayer.Stop()
-	if ((Get-audiodevice -playback).name -notmatch $name)
+	
+	
+	if ((Get-audiodevice -playback).name -notlike $name)
 	{
-		$tTimeout.Enabled = $false
-		Set-AudioDevice -InputObject ($audiolist | Where-Object name -match $name)
-		$soundPlayer.Play()
-		Invoke-FormFade -FadeIn
-		$tTimeout.Enabled = $true
+		
+		$newoutput = ($audiolist | Where-Object name -like $name)
+		if ($newoutput.count -eq 1)
+		{
+			$tTimeout.Enabled = $false
+			Set-AudioDevice -InputObject $newoutput
+			$soundPlayer.Play()
+			Invoke-FormFade -FadeIn
+			$tTimeout.Enabled = $true
+			
+		}
+		#debug and error info
+		elseif ($newoutput.count -gt 1)
+		{
+			throw "cound not decide between simular named outputs"
+			$name | Out-Host
+			$audiolist | Out-Host
+		}
+		elseif ($newoutput.count -le 1)
+		{
+			throw "did not find any matching outputs with the name $name"
+			$name | Out-Host
+			$audiolist | Out-Host
+		}
 	}
 }
 #endregion functions
