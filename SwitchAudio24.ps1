@@ -6,7 +6,7 @@ Install-Module -Name AudioDeviceCmdlets -Force
 
 #region UserConfig
 $VerbosePreference = 'Continue'
-$pIcon = 'C:\Icons\SwitchAudio_107.ico'
+$pIcon = "C:\Icons\SwitchAudio24.ico"
 $icon = [System.Drawing.icon]::ExtractAssociatedIcon($pIcon)
 	
 $SizeWidth = 200
