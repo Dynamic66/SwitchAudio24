@@ -6,9 +6,14 @@ Install-Module -Name AudioDeviceCmdlets -Force
 
 #region UserConfig
 $VerbosePreference = 'Continue'
-$pIcon = "C:\Icons\SwitchAudio24.ico"
+$pIcon = 'C:\Icons\SwitchAudio24.ico' # replace with the path to .ico or .exe
+$pFallbackIcon = "$env:windir\System32\WindowsPowerShell\v1.0\powershell.exe"
+if (-not (Test-Path $pIcon -ErrorAction SilentlyContinue)) {
+    $pIcon = $pFallbackIcon
+}
+
 $icon = [System.Drawing.icon]::ExtractAssociatedIcon($pIcon)
-	
+
 $SizeWidth = 200
 $SizeHeigth = 40
 $LocationX = [system.Windows.Forms.Screen]::PrimaryScreen.WorkingArea.Width - $SizeWidth
