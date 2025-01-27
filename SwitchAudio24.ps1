@@ -1,43 +1,51 @@
 # Initium Automata Scripturae
 #region requirements
 Add-Type -AssemblyName 'System.Windows.Forms'
-Install-Module -Name AudioDeviceCmdlets -Force
+Import-Module -Name AudioDeviceCmdlets -Force
+if(-not $?){
+    Write-Warning -Message "Module AudioDeviceCmdlets needs to be installed and will require Admin rights to do so."
+    Install-Module -Name AudioDeviceCmdlets -Force
+}
 #endregion
 
 #region UserConfig
-$VerbosePreference = 'Continue'
-$pIcon = 'C:\Icons\SwitchAudio24.ico' # replace with the path to .ico or .exe
-$pFallbackIcon = "$env:windir\System32\WindowsPowerShell\v1.0\powershell.exe"
+
+$VerbosePreference = 'SilentlyContinue' # set to "Continue" for debugging
+$pIcon = "$PSScriptRoot\SwitchAudio24.ico" # replace with the path to .ico or .exe 
+#matching the path to currently used powershell executable
+$pFallbackIcon = (Get-ChildItem "$pshome" -File | Where-Object {$_.name -Match '^p\w.*sh\w*.exe$' -and $_.name -inotmatch "ise"}).FullName 
 if (-not (Test-Path $pIcon -ErrorAction SilentlyContinue)) {
     $pIcon = $pFallbackIcon
 }
+
+$PSGetPath
 
 $icon = [System.Drawing.icon]::ExtractAssociatedIcon($pIcon)
 
 $SizeWidth = 200
 $SizeHeigth = 40
-$LocationX = [system.Windows.Forms.Screen]::PrimaryScreen.WorkingArea.Width - $SizeWidth
-$LocationY = [system.Windows.Forms.Screen]::PrimaryScreen.WorkingArea.Height - $SizeHeigth
-	
-$pFeedbackSound = 'C:\Windows\Media\Windows Unlock.wav'
-$FeedbackSoundPlayer = [System.Media.SoundPlayer]::new()
-$FeedbackSoundPlayer.SoundLocation = $pFeedbackSound
-$FeedbackSoundPlayer.Load()
 
+$pFeedbackSound = "$env:windir\Media\Windows Unlock.wav" # feel free to switch this path into any other .wav file
+
+
+#Color Theme
 $forColor = [System.Drawing.Color]::WhiteSmoke
 $backColor = [System.Drawing.Color]::FromArgb(60, 60, 60)
+
 #endregion
 
 #region Functions
 
 Function Set-NextOutput {
+    param(
+        [Array]$DeviceList = (Get-AudioDevice -List | Where-Object type -EQ 'Playback')
+    )
     $playback = Get-AudioDevice -Playback
-    $list = Get-AudioDevice -List | Where-Object type -EQ 'Playback'
     $newindex = $playback.index
 
     $newindex++
 
-    if ($newindex -gt $list.index.Count) {
+    if ($newindex -gt $DeviceList.index.Count) {
         $newindex = 1
     }
 
@@ -49,14 +57,18 @@ Function Set-NextOutput {
     $script:fadeLvl = 0
     $script:delay = 0
 
-    $script:tHideForm.Enabled = $true
-    $script:tHideForm.start()
+    $tHideForm.Enabled = $true
+    $tHideForm.start()
 }
 
 
-function Main {
+function Show-SwitchAudio24 {
 
-    $script:tHideForm = [System.Windows.Forms.Timer]::new()
+    $FeedbackSoundPlayer = [System.Media.SoundPlayer]::new()
+    $FeedbackSoundPlayer.SoundLocation = $pFeedbackSound
+    $FeedbackSoundPlayer.Load()
+
+    $tHideForm = [System.Windows.Forms.Timer]::new()
     $tHideForm.Interval = 15
     $tHideForm.add_tick({
 
@@ -71,8 +83,8 @@ function Main {
                 }
                 else {
                     $form.Opacity = 0
-                    $script:tHideForm.stop()
-                    $script:tHideForm.Enabled = $flase
+                    $tHideForm.stop()
+                    $tHideForm.Enabled = $flase
                 }
 
             }
@@ -82,11 +94,16 @@ function Main {
             }
         })
 
+    $LocationX = [system.Windows.Forms.Screen]::PrimaryScreen.WorkingArea.Width - $SizeWidth
+    $LocationY = [system.Windows.Forms.Screen]::PrimaryScreen.WorkingArea.Height - $SizeHeigth
+
+    #UI Configuration
+
     $lCurrentPlayback = [System.Windows.Forms.Label]::new()
     $lCurrentPlayback.Text = (Get-AudioDevice -Playback).name
     $lCurrentPlayback.AutoSize = $false
-    $lCurrentPlayback.Dock = 'fill'
-    $lCurrentPlayback.TextAlign = 'MiddleLeft'
+    $lCurrentPlayback.Dock = [System.Windows.Forms.DockStyle]::Fill
+    $lCurrentPlayback.TextAlign = [System.Drawing.ContentAlignment]::MiddleLeft
 
     $form = [system.windows.forms.form]::new()
     $form.Icon = $Icon
@@ -96,15 +113,11 @@ function Main {
     $form.AutoSize = $false
     $form.BackColor = $backColor
     $form.ForeColor = $forcolor
-    $form.FormBorderStyle = 'None'
-    $form.StartPosition = 'Manual'
-    $form.Padding = '10,5,0,5'
+    $form.FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::None
+    $form.StartPosition = [System.Windows.Forms.FormStartPosition]::Manual
+    $form.Padding = [System.Windows.Forms.Padding]::new(10,5,0,5)
     $form.ShowInTaskbar = $false
     $form.Controls.Add($lCurrentPlayback)
-    $form.add_closed({
-            $trayIcon.Visible = $false
-            
-        })
 
     $contextmenue = [System.Windows.Forms.ContextMenuStrip]::new()
     $bExit = $contextmenue.Items.Add('Exit')
@@ -121,14 +134,17 @@ function Main {
             Set-NextOutput
         })
 
-    $script:tHideForm.Start()
+    #starting UI
+    $tHideForm.Start()
     $form.ShowDialog()
 
     #cleanup
-    $script:tHideForm.Dispose()
+    $tHideForm.Dispose()
+    $FeedbackSoundPlayer.Dispose()
+    $trayIcon.Visible = $false
 }
 
 #endregion
 
 # Invocatio Automata Scripturae
-Main
+Show-SwitchAudio24
