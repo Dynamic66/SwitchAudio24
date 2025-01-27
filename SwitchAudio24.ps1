@@ -18,20 +18,16 @@ if (-not (Test-Path $pIcon -ErrorAction SilentlyContinue)) {
     $pIcon = $pFallbackIcon
 }
 
-
-
 $icon = [System.Drawing.icon]::ExtractAssociatedIcon($pIcon)
 
 $SizeWidth = 250
-$SizeHeigth = 35
+$SizeHeigth = 39
 
 $pFeedbackSound = "$env:windir\Media\Windows Unlock.wav" # feel free to switch this path into any other .wav file
-
 
 #Color Theme
 $forColor = [System.Drawing.Color]::WhiteSmoke
 $backColor = [System.Drawing.Color]::FromArgb(60, 60, 60)
-
 #endregion
 
 #region Functions
@@ -94,15 +90,12 @@ function Show-SwitchAudio24 {
             }
         })
 
-    $LocationX = [system.Windows.Forms.Screen]::PrimaryScreen.WorkingArea.Width - $SizeWidth
-    $LocationY = [system.Windows.Forms.Screen]::PrimaryScreen.WorkingArea.Height - $SizeHeigth
-
     #UI Layout
 
     $pBox = [System.Windows.Forms.PictureBox]::new()
-    $pBox.dock = "left"
+    $pBox.dock = [System.Windows.Forms.DockStyle]::left
     $pBox.BackgroundImage = $icon
-    $pBox.BackgroundImageLayout = 'zoom'
+    $pBox.BackgroundImageLayout = [System.Windows.Forms.ImageLayout]::Zoom
     $pBox.Width = 30   
 
     $lCurrentPlayback = [System.Windows.Forms.Label]::new()
@@ -114,6 +107,8 @@ function Show-SwitchAudio24 {
     $form = [system.windows.forms.form]::new()
     $form.Icon = $Icon
     $form.MaximumSize = [System.Drawing.Size]::new($SizeWidth, $SizeHeigth)
+    $LocationX = [system.Windows.Forms.Screen]::PrimaryScreen.WorkingArea.Width - $form.Width
+    $LocationY = [system.Windows.Forms.Screen]::PrimaryScreen.WorkingArea.Height - $form.Height
     $form.Location = [System.Drawing.Point]::new($LocationX, $LocationY)
     $form.Opacity = $Opacity
     $form.AutoSize = $false
@@ -121,12 +116,15 @@ function Show-SwitchAudio24 {
     $form.ForeColor = $forcolor
     $form.FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::None
     $form.StartPosition = [System.Windows.Forms.FormStartPosition]::Manual
-    $form.Padding = [System.Windows.Forms.Padding]::new(10,7,0,10)
+    $form.Padding = [System.Windows.Forms.Padding]::new(10,10,3,10)
     $form.ShowInTaskbar = $false
     $form.Controls.Add($lCurrentPlayback)
     $form.Controls.add($pBox)
 
     $contextmenue = [System.Windows.Forms.ContextMenuStrip]::new()
+    $contextmenue.BackColor = $backColor
+    $contextmenue.ForeColor = $forColor
+    $contextmenue.ShowImageMargin = $false
     $bExit = $contextmenue.Items.Add('Exit')
     $bExit.add_click({
             $form.Close()
