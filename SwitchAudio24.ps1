@@ -12,7 +12,6 @@ if(-not $?){
 
 $VerbosePreference = 'SilentlyContinue' # set to "Continue" for debugging
 $pIcon = "$PSScriptRoot\SwitchAudio24.ico" # replace with the path to .ico or .exe
-$pIcon = ".\SwitchAudio24.ico"
 #matching the path to currently used powershell executable
 $pFallbackIcon = (Get-ChildItem "$pshome" -File | Where-Object {$_.name -Match '^p\w.*sh\w*.exe$' -and $_.name -inotmatch "ise"}).FullName 
 if (-not (Test-Path $pIcon -ErrorAction SilentlyContinue)) {
@@ -24,7 +23,7 @@ if (-not (Test-Path $pIcon -ErrorAction SilentlyContinue)) {
 $icon = [System.Drawing.icon]::ExtractAssociatedIcon($pIcon)
 
 $SizeWidth = 250
-$SizeHeigth = 30
+$SizeHeigth = 35
 
 $pFeedbackSound = "$env:windir\Media\Windows Unlock.wav" # feel free to switch this path into any other .wav file
 
@@ -100,15 +99,17 @@ function Show-SwitchAudio24 {
 
     #UI Layout
 
-    
+    $pBox = [System.Windows.Forms.PictureBox]::new()
+    $pBox.dock = "left"
+    $pBox.BackgroundImage = $icon
+    $pBox.BackgroundImageLayout = 'zoom'
+    $pBox.Width = 30   
 
     $lCurrentPlayback = [System.Windows.Forms.Label]::new()
     $lCurrentPlayback.Text = (Get-AudioDevice -Playback).name -replace('\(.*\)')
     $lCurrentPlayback.AutoSize = $false
     $lCurrentPlayback.Dock = [System.Windows.Forms.DockStyle]::Fill
     $lCurrentPlayback.TextAlign = [System.Drawing.ContentAlignment]::MiddleCenter
-    $lCurrentPlayback.Image = $icon
-    $lCurrentPlayback.ImageAlign = [System.Drawing.ContentAlignment]::MiddleLeft
 
     $form = [system.windows.forms.form]::new()
     $form.Icon = $Icon
@@ -120,10 +121,10 @@ function Show-SwitchAudio24 {
     $form.ForeColor = $forcolor
     $form.FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::None
     $form.StartPosition = [System.Windows.Forms.FormStartPosition]::Manual
-    $form.Padding = [System.Windows.Forms.Padding]::new(10,4,3,10)
+    $form.Padding = [System.Windows.Forms.Padding]::new(10,7,0,10)
     $form.ShowInTaskbar = $false
     $form.Controls.Add($lCurrentPlayback)
-
+    $form.Controls.add($pBox)
 
     $contextmenue = [System.Windows.Forms.ContextMenuStrip]::new()
     $bExit = $contextmenue.Items.Add('Exit')
