@@ -11,19 +11,20 @@ if(-not $?){
 #region UserConfig
 
 $VerbosePreference = 'SilentlyContinue' # set to "Continue" for debugging
-$pIcon = "$PSScriptRoot\SwitchAudio24.ico" # replace with the path to .ico or .exe 
+$pIcon = "$PSScriptRoot\SwitchAudio24.ico" # replace with the path to .ico or .exe
+$pIcon = ".\SwitchAudio24.ico"
 #matching the path to currently used powershell executable
 $pFallbackIcon = (Get-ChildItem "$pshome" -File | Where-Object {$_.name -Match '^p\w.*sh\w*.exe$' -and $_.name -inotmatch "ise"}).FullName 
 if (-not (Test-Path $pIcon -ErrorAction SilentlyContinue)) {
     $pIcon = $pFallbackIcon
 }
 
-$PSGetPath
+
 
 $icon = [System.Drawing.icon]::ExtractAssociatedIcon($pIcon)
 
-$SizeWidth = 200
-$SizeHeigth = 40
+$SizeWidth = 250
+$SizeHeigth = 30
 
 $pFeedbackSound = "$env:windir\Media\Windows Unlock.wav" # feel free to switch this path into any other .wav file
 
@@ -51,7 +52,7 @@ Function Set-NextOutput {
 
     Set-AudioDevice -Index $newindex 
     $FeedbackSoundPlayer.Play()
-    $lCurrentPlayback.Text = (Get-AudioDevice -Playback).name
+    $lCurrentPlayback.Text = (Get-AudioDevice -Playback).name -replace('\(.*\)')
     Write-Verbose (Get-AudioDevice -Playback).name
 
     $script:fadeLvl = 0
@@ -97,17 +98,21 @@ function Show-SwitchAudio24 {
     $LocationX = [system.Windows.Forms.Screen]::PrimaryScreen.WorkingArea.Width - $SizeWidth
     $LocationY = [system.Windows.Forms.Screen]::PrimaryScreen.WorkingArea.Height - $SizeHeigth
 
-    #UI Configuration
+    #UI Layout
+
+    
 
     $lCurrentPlayback = [System.Windows.Forms.Label]::new()
-    $lCurrentPlayback.Text = (Get-AudioDevice -Playback).name
+    $lCurrentPlayback.Text = (Get-AudioDevice -Playback).name -replace('\(.*\)')
     $lCurrentPlayback.AutoSize = $false
     $lCurrentPlayback.Dock = [System.Windows.Forms.DockStyle]::Fill
-    $lCurrentPlayback.TextAlign = [System.Drawing.ContentAlignment]::MiddleLeft
+    $lCurrentPlayback.TextAlign = [System.Drawing.ContentAlignment]::MiddleCenter
+    $lCurrentPlayback.Image = $icon
+    $lCurrentPlayback.ImageAlign = [System.Drawing.ContentAlignment]::MiddleLeft
 
     $form = [system.windows.forms.form]::new()
     $form.Icon = $Icon
-    $form.Size = [System.Drawing.Size]::new($SizeWidth, $SizeHeigth)
+    $form.MaximumSize = [System.Drawing.Size]::new($SizeWidth, $SizeHeigth)
     $form.Location = [System.Drawing.Point]::new($LocationX, $LocationY)
     $form.Opacity = $Opacity
     $form.AutoSize = $false
@@ -115,9 +120,10 @@ function Show-SwitchAudio24 {
     $form.ForeColor = $forcolor
     $form.FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::None
     $form.StartPosition = [System.Windows.Forms.FormStartPosition]::Manual
-    $form.Padding = [System.Windows.Forms.Padding]::new(10,5,0,5)
+    $form.Padding = [System.Windows.Forms.Padding]::new(10,4,3,10)
     $form.ShowInTaskbar = $false
     $form.Controls.Add($lCurrentPlayback)
+
 
     $contextmenue = [System.Windows.Forms.ContextMenuStrip]::new()
     $bExit = $contextmenue.Items.Add('Exit')
