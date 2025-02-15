@@ -141,7 +141,7 @@ function Show-SwitchAudio24 {
 
     #starting UI
     $tHideForm.Start()
-    $form.ShowDialog()
+    [System.Windows.Forms.Application]::Run($form)
 
     #cleanup
     $tHideForm.Dispose()
