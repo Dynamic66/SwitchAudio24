@@ -1,4 +1,4 @@
-# Initium Automata Scripturae
+
 #region requirements
 Add-Type -AssemblyName 'System.Windows.Forms'
 Import-Module -Name AudioDeviceCmdlets -Force
@@ -23,7 +23,7 @@ $icon = [System.Drawing.icon]::ExtractAssociatedIcon($pIcon)
 $SizeWidth = 250
 $SizeHeigth = 39
 
-$pFeedbackSound = "$env:windir\Media\Windows Unlock.wav" # feel free to switch this path into any other .wav file
+$pFeedbackSound = "$env:windir\Media\Windows Unlock.wav" # feel free to change this into any other .wav file path
 
 #Color Theme
 $forColor = [System.Drawing.Color]::WhiteSmoke
@@ -151,5 +151,4 @@ function Show-SwitchAudio24 {
 
 #endregion
 
-# Invocatio Automata Scripturae
 Show-SwitchAudio24
